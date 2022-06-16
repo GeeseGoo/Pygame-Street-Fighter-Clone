@@ -3,6 +3,7 @@ import pygame
 from pygame.locals import *
 from lib import *
 from time import sleep
+from anims import *
 
 # Initialize pygame
 pygame.init()
@@ -13,10 +14,16 @@ clock = pygame.time.Clock()
 playersize = [144*5, 130*5]
 #playersize = [144, 130] # ANT MODE
 
-keyboard = [
+keyboard_binds = [
     [K_COMMA, K_o, K_a, K_e],  # [K_w, K_s, K_a, K_d] # Up, down, left, right
     [K_g, K_c, K_r,      K_h, K_t, K_n]  # Low punch, med punch, high punch, low kick, med kick, high kick
 ]
+controller_binds = [
+    [LSTICK_UP, LSTICK_DOWN, LSTICK_LEFT, LSTICK_DOWN],  # Up, down, left, right
+    [2, False, False,      False, False, False]  # Low punch, med punch, high punch, low kick, med kick, high kick
+]
+
+TOLERANCE = 0.5
 
 pygame.mixer.init()
 pygame.mixer.music.load("1 2 oatmeal.mp3")
@@ -26,40 +33,43 @@ try:
 
 except:
     print("No joystick found")
+    controller = None
 player1 = Ryu(False, None, [0, FLOOR], playersize)
 #player2 = Ryu(True, controller, [500, FLOOR], playersize)
-player2 = Ryu(True, None, [1500, FLOOR], playersize)
+player2 = Ryu(True, controller, [1500, FLOOR], playersize)
 running = True
 background = pygame.transform.scale(pygame.image.load("./stage.png").convert_alpha(), (1920, 1080))
 
 pygame.display.update()
 
-def kbd_input( player, prev_input):
-    inputs = [[True if i == j.key else False for i in k for j in pygame.event.get() if j.type == pygame.KEYDOWN] for k in keyboard]
-    print(inputs)
-    print([[True for k in pygame.event.get() if k.type == pygame.KEYDOWN for j in i if j == k.key] for i in keyboard])
+def kbd_input(player, prev_input):
+    events = [i.key for i in pygame.event.get() if i.type == pygame.KEYDOWN]
+    inputs = [[True if j in events else False for j in i] for i in keyboard_binds]
 
 
-    # def con_input(self):
-    #     TOLERANCE = 0.5
-    #     controls = [
-    #     [False, False, False, False],  # Up, down, left, right
-    #     [False, False, False,      False, False, False]  # Low punch, med punch, high punch, low kick, med kick, high kick
-    # ]
-    #     # MOVEMENT
-    #     if self.controller.get_axis(1) < -TOLERANCE:
-    #         controls[0][0] = True
-    #     if self.controller.get_axis(1) > TOLERANCE:
-    #         controls[0][1] = True
-    #     if self.controller.get_axis(0) < -TOLERANCE:
-    #         controls[0][2] = True
-    #     if self.controller.get_axis(0) > TOLERANCE:
-    #         controls[0][3] = True
-    #
-    #     # ATTACK
-    #     controls[1][0] = self.controller.get_button(2)
-    #
-    #     return controls
+def con_input(self):
+    joystick_events = [[i.axis, i.value] for i in pygame.event.get() if i.type == pygame.JOYAXISMOTION]
+    button_events = [i.button for i in pygame.event.get() if i.type == pygame.JOYBUTTONDOWN]
+
+    # MOVEMENT
+    movement = []
+    for i in controller_binds[0]:
+        if isinstance(i, list):  # If using joystick
+
+
+    if controller.get_axis(1) < -TOLERANCE:
+        controls[0][0] = True
+    if self.controller.get_axis(1) > TOLERANCE:
+        controls[0][1] = True
+    if self.controller.get_axis(0) < -TOLERANCE:
+        controls[0][2] = True
+    if self.controller.get_axis(0) > TOLERANCE:
+        controls[0][3] = True
+
+    # ATTACK
+    controls[1][0] = self.controller.get_button(2)
+
+    return controls
 
 input_buffer = []
 prevjoystick = 0

@@ -264,9 +264,6 @@ class Character(pygame.sprite.Sprite):
         self.frame_queue = []
 
 
-
-
-
 class Ryu(Character):
     def __init__(self, flip, controller, coord, size):
         super().__init__(flip, controller,  size)
@@ -277,7 +274,7 @@ class Ryu(Character):
         self.idle = cycle(add_delay(self.frames[10:14], 10))
 
     def move(self):
-        super().move(jump_side_frames=eval(ryu_jump_side), jump_frames=eval(ryu_jump_straight), walk_right_frames=cycle(add_delay(self.frames[15:20], 5)),
+        super().move(jump_side_frames=eval(RYU_JUMP_SIDE), jump_frames=eval(RYU_JUMP_STRAIGHT), walk_right_frames=cycle(add_delay(self.frames[15:20], 5)),
                      walk_left_frames=cycle(add_delay(self.frames[15:20], 5)), crouching_frames=chain(iter((self.frames[34], None, self.frames[35])), cycle((None,))),
                      crouch_up_frames=iter((self.frames[34],None)))
 
@@ -294,7 +291,7 @@ class Ryu(Character):
 
         def lpunch():
             spawn_rect = self.rect.topright
-            hbox = ryu_lpunch_hbox
+            hbox = RYU_LPUNCH_HBOX
             knockback = 10
             if self.flip:
                 spawn_rect = [self.rect.topleft[0] - hbox[0], self.rect.topleft[1]]
@@ -318,7 +315,7 @@ class Ryu(Character):
                 offset = None
             if lpunch_con in self.keys_down or lpunch_kbd in self.keys_down:
                 self.action = [lpunch, "lpunch", blit, offset, custom_rect, None]
-                self.frame_queue = eval(ryu_lpunch)
+                self.frame_queue = eval(RYU_LPUNCH)
 
     def hit(self, dmg, stuntime, knockback):
         def stophit():
