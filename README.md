@@ -1,8 +1,10 @@
-# Street Fighter Pygame Clone
+# Street Fighter In Pygame
 
 ![Hadouken](hadouken.png)
 
 A retro-style fighting game inspired by Street Fighter, built with Pygame.
+
+[](url)
 
 ## Game Features
 - Two-player fighting game
