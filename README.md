@@ -1,4 +1,4 @@
-# Street Fighter In Pygame
+# Street Pyter
 
 ![Hadouken](hadouken.png)
 
