@@ -89,8 +89,6 @@ The game follows an object-oriented design with the following core components:
     └── stage.png   # Game background
 ```
 
-## Credits
-Created by [Your Name]
 
 ## License
 This game is free to play and distribute.
