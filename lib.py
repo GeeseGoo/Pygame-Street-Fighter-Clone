@@ -5,10 +5,40 @@ from pygame.locals import *
 
 
 def draw_hpbar(disp, player1, player2):
-    # Converts players healths to a ratio, then multiplies it by the total amount of pixels taken up by the health bar
-    pygame.draw.rect(disp, (255, 0, 0), pygame.Rect(0,0, player1.health / TOTAL_HEALTH * 500, 70))
-    player2bar = player2.health / TOTAL_HEALTH * 500
-    pygame.draw.rect(disp, (255, 0, 0), pygame.Rect(1920 - player2bar, 0, player2bar, 70))
+    # Health bar dimensions
+    bar_height = 15
+    bar_width = 300
+    bar_y = 50  # Lowered by 100px
+    border_width = 2
+    
+    # Player 1 health bar - moved 400px from left edge
+    p1_x = 250
+    p1_health = max(0, player1.health / TOTAL_HEALTH * bar_width)
+    
+    # Player 2 health bar - moved 400px from right edge
+    p2_x = disp.get_width() - bar_width - 250
+    p2_health = max(0, player2.health / TOTAL_HEALTH * bar_width)
+    
+    # Draw health bar borders
+    pygame.draw.rect(disp, (255, 255, 255), pygame.Rect(p1_x - border_width, bar_y - border_width, bar_width + border_width*2, bar_height + border_width*2))
+    pygame.draw.rect(disp, (255, 255, 255), pygame.Rect(p2_x - border_width, bar_y - border_width, bar_width + border_width*2, bar_height + border_width*2))
+    
+    # Draw health bar backgrounds
+    pygame.draw.rect(disp, (0, 0, 0), pygame.Rect(p1_x, bar_y, bar_width, bar_height))
+    pygame.draw.rect(disp, (0, 0, 0), pygame.Rect(p2_x, bar_y, bar_width, bar_height))
+    
+    # Draw health bars
+    pygame.draw.rect(disp, (255, 0, 0), pygame.Rect(p1_x, bar_y, p1_health, bar_height))
+    pygame.draw.rect(disp, (255, 0, 0), pygame.Rect(p2_x, bar_y, p2_health, bar_height))
+    
+    # Draw player names
+    font = pygame.font.Font(None, 20)
+    p1_name = font.render("P1", True, (255, 255, 255))
+    p2_name = font.render("P2", True, (255, 255, 255))
+    
+    # Position names above health bars
+    disp.blit(p1_name, (p1_x, bar_y - 20))
+    disp.blit(p2_name, (p2_x, bar_y - 20))
 
 
 # Delay specifies how many frames to delay between each new frame
@@ -72,7 +102,12 @@ class Character(pygame.sprite.Sprite):
     # Some actions do not want to be reactivated if the key is held down, so we can compare the current input to the previous input to see if any keys are held down
     def keyboard_input(self, held=True):
         keys = pygame.key.get_pressed()
-        inputs = [[keys[j] for j in i]for i in keyboard_binds]
+        # Use different key bindings based on which player this is
+        if self.player == 0:  # Player 1
+            inputs = [[keys[j] for j in i]for i in keyboard_binds]
+        else:  # Player 2
+            inputs = [[keys[j] for j in i]for i in keyboard_binds_p2]
+            
         if not held:
             if self.input_buffer[-1] == inputs:
                 return DEFAULT_INPUTS
@@ -437,17 +472,9 @@ class Character(pygame.sprite.Sprite):
 
         # If player doesn't block the attack
         self.health -= dmg
-        # Calculate if player has died
+        # Set health to 0 if it goes below 0
         if self.health < 0:
-            winner = 'Player 1 wins'
-            if self.player == 0:
-                winner = 'Player 2 Wins'
-            font = pygame.font.SysFont('Eurostile', 150, bold=True)
-            surface = font.render(winner, False, (255,255,255))
-            self.disp.blit(surface, (1920/2 - 400, 400))
-            pygame.display.flip()
-            pygame.time.wait(10000)
-            pygame.quit()
+            self.health = 0
 
         # Play hit animation
         self.finish_action()
@@ -557,13 +584,16 @@ class Character(pygame.sprite.Sprite):
 # Inherits from Character
 class Ryu(Character):
     def __init__(self, flip, controller, coord, size, opponent, disp):
-        super().__init__(flip, controller,  size, opponent, disp)
-        spritesheet = pygame.image.load("./ryu_spritesheet.png").convert_alpha()    # load in and parse spritesheet
-        self.frames = parse_spritesheet(spritesheet, [144, 130], 14, 15, size)
-
-        # Initialize player
-        self.rect = self.frames[27].get_bounding_rect()
-        self.rect.bottomleft = coord
+        super().__init__(flip, controller, size, opponent, disp)
+        self.rect = pygame.Rect(coord, size)
+        self.frames = parse_spritesheet(pygame.image.load("./ryu_spritesheet.png").convert_alpha(), [144, 130], 14, 15, size)
+        self.health = TOTAL_HEALTH
+        self.vel_x = 0
+        self.vel_y = 0
+        self.ishit = False
+        self.action = None
+        self.frame_queue = None
+        self.input_buffer = [None]
 
         # Some animations are defined here instead of passing as arguments through multiple functions
         self.idle = cycle(add_delay(self.frames[10:14], 10))
@@ -573,6 +603,22 @@ class Ryu(Character):
         # Keep track of special moves
         self.specials = {}
         self.special_func = []
+
+    def reset(self):
+        """Reset the player's state to initial conditions"""
+        self.health = TOTAL_HEALTH
+        self.vel_x = 0
+        self.vel_y = 0
+        self.ishit = False
+        self.action = None
+        self.frame_queue = None
+        self.input_buffer = [None]
+        # Reset position based on which player it is
+        if self.flip:
+            self.rect.x = 1600
+        else:
+            self.rect.x = 0
+        self.rect.y = FLOOR - self.rect.height
 
     # Inherits from move, specifying animations
     def move(self):

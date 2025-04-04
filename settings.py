@@ -1,16 +1,32 @@
 from pygame.mixer import Sound, init
 from pygame.locals import *
+import os
+
 init()
-# Controls for keyboard
+
+# Controls for keyboard (Player 1)
 keyboard_binds = [
-            [K_COMMA, K_o, K_a, K_e],  # [K_w, K_s, K_a, K_d] # Up, down, left, right
-            [K_g, K_c, K_r,      K_h, K_t, K_n]  # Low punch, med punch, high punch, low kick, med kick, high kick
+            [K_w, K_s, K_a, K_d],  # Up, down, left, right
+            [K_u, K_i, K_o, K_j, K_k, K_l]  # Low punch, med punch, high punch, low kick, med kick, high kick
 ]
+
+# Controls for keyboard (Player 2)
+keyboard_binds_p2 = [
+            [K_UP, K_DOWN, K_LEFT, K_RIGHT],  # Up, down, left, right
+            [K_1, K_2, K_3, K_4, K_5, K_6]  # Low punch, med punch, high punch, low kick, med kick, high kick
+]
+
 # Mapping the controls allows the program to easily know which inputs are being activated
 keyboard_map = {
             keyboard_binds[0][0]: 'up', keyboard_binds[0][1]: 'down', keyboard_binds[0][2]: 'left', keyboard_binds[0][3]: 'right',
-            keyboard_binds[1][0]: 'lpunch', keyboard_binds[1][1]: 'mpunch', keyboard_binds[1][2]: 'hpunch',      keyboard_binds[1][3]: 'lkick',
+            keyboard_binds[1][0]: 'lpunch', keyboard_binds[1][1]: 'mpunch', keyboard_binds[1][2]: 'hpunch', keyboard_binds[1][3]: 'lkick',
             keyboard_binds[1][4]: 'mkick', keyboard_binds[1][5]: 'hkick'
+}
+
+keyboard_map_p2 = {
+            keyboard_binds_p2[0][0]: 'up', keyboard_binds_p2[0][1]: 'down', keyboard_binds_p2[0][2]: 'left', keyboard_binds_p2[0][3]: 'right',
+            keyboard_binds_p2[1][0]: 'lpunch', keyboard_binds_p2[1][1]: 'mpunch', keyboard_binds_p2[1][2]: 'hpunch', keyboard_binds_p2[1][3]: 'lkick',
+            keyboard_binds_p2[1][4]: 'mkick', keyboard_binds_p2[1][5]: 'hkick'
 }
 
 # Controller controls, joystick controls are handled separately
@@ -29,13 +45,13 @@ SCREEN_WIDTH = 1920
 FLOOR = 980
 JUMP_STR = -50
 ATTACK_CD = 100
-TOTAL_HEALTH = 300
+TOTAL_HEALTH = 50
 TOLERANCE = 0.5  # Joystick tolerance
 
 # Template values for inputs
 DEFAULT_INPUTS = [
         [False, False, False, False],  # Up, down, left, right
-        [False, False, False,  False, False, False]# Low punch, med punch, high punch, low kick, med kick, high kick
+        [False, False, False,  False, False, False]  # Low punch, med punch, high punch, low kick, med kick, high kick
     ]
 
 # Animations
@@ -106,7 +122,6 @@ RYU_AIR_KICK_ST = 18
 
 RYU_HADOUKEN_ST = 5
 
-
 # Damage
 RYU_LPUNCH_DMG = 6
 RYU_MPUNCH_DMG = 14
@@ -123,19 +138,30 @@ RYU_AIR_KICK_DMG = 16
 
 RYU_HADOUKEN_DMG = 3
 
-
 RYU_HADOUKEN_SPEED = 15
 RYU_HADOUKEN_LEEWAY = 200  # How fast the inputs must be for multi step actions
 
-
 # SFX
-RYU_DEATH_SFX = Sound("./SFX/Ryu/death.wav")
-RYU_HURT_SFX = Sound("./SFX/Ryu/hurt.wav")
-RYU_JUMP_SFX = Sound("./SFX/Ryu/jump.wav")
-RYU_HEAVY_SFX = Sound("./SFX/Ryu/heavy.wav")
-RYU_MEDIUM_SFX = Sound("./SFX/Ryu/medium.wav")
-RYU_LIGHT_SFX = Sound("./SFX/Ryu/light.wav")
-RYU_HADOUKEN_SFX = Sound("./SFX/Ryu/hadouken.wav")
+def load_sound(path):
+    try:
+        return Sound(path)
+    except:
+        print(f"Warning: Could not load sound file {path}")
+        return None
+
+# Create SFX directory if it doesn't exist
+if not os.path.exists("./SFX"):
+    os.makedirs("./SFX")
+if not os.path.exists("./SFX/Ryu"):
+    os.makedirs("./SFX/Ryu")
+
+RYU_DEATH_SFX = load_sound("./SFX/Ryu/death.wav")
+RYU_HURT_SFX = load_sound("./SFX/Ryu/hurt.wav")
+RYU_JUMP_SFX = load_sound("./SFX/Ryu/jump.wav")
+RYU_HEAVY_SFX = load_sound("./SFX/Ryu/heavy.wav")
+RYU_MEDIUM_SFX = load_sound("./SFX/Ryu/medium.wav")
+RYU_LIGHT_SFX = load_sound("./SFX/Ryu/light.wav")
+RYU_HADOUKEN_SFX = load_sound("./SFX/Ryu/hadouken.mp3")
 
 
 
