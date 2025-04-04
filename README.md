@@ -53,6 +53,42 @@ A retro-style fighting game inspired by Street Fighter, built with Pygame.
 - Pygame 2.0+
 - A controller (optional)
 
+## Technical Documentation
+
+### Architecture Overview
+The game follows an object-oriented design with the following core components:
+
+### Core Classes
+- `Fighter`: Base class for player characters
+  - Manages character state, animations, and move execution
+  - Handles collision detection and hit registration
+  - Implements special move recognition system
+
+- `Game`: Main game controller
+  - Manages game state and player instances
+  - Handles input processing and event management
+  - Controls game flow and round system
+
+### Key Modules
+- `lib.py`: Core game utilities and helper functions
+  - Drawing functions for UI elements
+  - Input processing and move validation
+  - Collision detection algorithms
+
+- `settings.py`: Game configuration
+  - Constants for game mechanics (health, speed, gravity)
+  - Screen dimensions and UI settings
+  - Control mappings
+
+### File Structure
+```
+├── main.py         # Game entry point
+├── lib.py          # Core utilities
+├── settings.py     # Configuration
+└── assets/         # Game resources
+    └── stage.png   # Game background
+```
+
 ## Credits
 Created by [Your Name]
 
