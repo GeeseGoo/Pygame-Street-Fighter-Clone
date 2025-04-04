@@ -43,6 +43,8 @@ A retro-style fighting game inspired by Street Fighter, built with Pygame.
 - Special moves work the same as keyboard
 
 ## How to Play
+Download and unzip the latest release!
+Or to build yourself:
 1. Download and extract the game files
 2. Install Python 3.8 or later
 3. Install requirements: `pip install -r requirements.txt`
