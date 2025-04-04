@@ -53,8 +53,6 @@ A retro-style fighting game inspired by Street Fighter, built with Pygame.
 - Pygame 2.0+
 - A controller (optional)
 
-## Credits
-Created by [Your Name]
 
 ## License
 This game is free to play and distribute.
